@@ -17,7 +17,8 @@
   }
 
   body {
-    @apply bg-app font-sans text-foreground antialiased;
+    background-color: #f4f5f7;
+    @apply font-sans text-foreground antialiased;
     font-family:
       'Inter',
       -apple-system,
@@ -28,8 +29,8 @@
   }
 
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 5px;
+    height: 5px;
   }
 
   ::-webkit-scrollbar-track {
@@ -37,7 +38,7 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply rounded-full bg-surface-muted;
+    @apply rounded-full bg-border;
   }
 
   ::-webkit-scrollbar-thumb:hover {
@@ -46,23 +47,48 @@
 }
 
 @layer components {
-  .mobility-card {
+  .console-card {
     @apply rounded-2xl border border-border bg-surface shadow-card;
   }
 
-  .mobility-input {
-    @apply w-full rounded-xl border border-border bg-surface-soft px-4 py-2.5 text-sm text-foreground placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50;
+  .console-input {
+    @apply w-full rounded-xl border border-border bg-surface px-3 py-2 text-sm text-foreground placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15 disabled:opacity-50;
   }
 
-  .mobility-btn-primary {
-    @apply rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-primary/90 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50;
+  .console-btn-primary {
+    @apply inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50;
   }
 
-  .mobility-btn-secondary {
-    @apply rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-medium text-foreground shadow-sm transition-all hover:border-primary/40 hover:bg-primary-soft/40 disabled:opacity-50;
+  .console-btn-secondary {
+    @apply inline-flex items-center gap-2 rounded-xl border border-border bg-surface px-4 py-2 text-sm font-medium text-foreground shadow-sm transition-colors hover:border-primary/30 hover:bg-primary-soft disabled:opacity-50;
+  }
+
+  .console-label {
+    @apply text-[11px] font-semibold tracking-wide text-muted;
   }
 
   .status-pill {
-    @apply inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-soft px-3 py-1 text-xs font-medium text-secondary;
+    @apply inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-2.5 py-1 text-xs font-medium text-secondary;
+  }
+
+  .chip-btn {
+    @apply rounded-full border border-border bg-surface px-2.5 py-1 text-xs text-secondary transition-colors hover:border-primary hover:bg-primary-soft hover:text-primary disabled:opacity-50;
+  }
+
+  /* legacy alias */
+  .mobility-card {
+    @apply console-card;
+  }
+
+  .mobility-input {
+    @apply console-input;
+  }
+
+  .mobility-btn-primary {
+    @apply console-btn-primary;
+  }
+
+  .mobility-btn-secondary {
+    @apply console-btn-secondary;
   }
 }

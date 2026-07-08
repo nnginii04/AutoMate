@@ -1,4 +1,5 @@
 import type { KeyboardEvent } from 'react';
+import { Play } from 'lucide-react';
 import { EXAMPLE_PHRASES } from '../../utils/constants';
 
 type AgentInputProps = {
@@ -24,49 +25,46 @@ export function AgentInput({
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       <div>
-        <h3 className="text-lg font-semibold text-foreground">
-          AI Command Console
+        <p className="console-label">Command input</p>
+        <h3 className="mt-1 text-base font-bold text-foreground">
+          Ask the vehicle agent
         </h3>
-        <p className="mt-1 text-sm text-secondary">
-          Enter an in-vehicle command and inspect how the agent maps it to intent
-          and tool calls.
-        </p>
       </div>
 
       <textarea
         id="agent-input"
-        rows={4}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={handleKeyDown}
-        placeholder="e.g. Turn up the heat, navigate home, play calm music…"
+        placeholder="예: 나 좀 추워 / 집으로 안내해줘 / 배터리 상태 확인해줘"
         disabled={loading || disabled}
-        className="mobility-input resize-none"
+        className="console-input h-[120px] resize-none leading-relaxed"
       />
 
-      <button
-        type="button"
-        onClick={onRun}
-        disabled={loading || disabled || !value.trim()}
-        className="mobility-btn-primary w-full bg-gradient-to-r from-primary to-cyan"
-      >
-        {loading ? 'Running Agent…' : 'Run Agent'}
-      </button>
+      <div className="flex justify-end">
+        <button
+          type="button"
+          onClick={onRun}
+          disabled={loading || disabled || !value.trim()}
+          className="console-btn-primary"
+        >
+          <Play className="h-3.5 w-3.5" fill="currentColor" />
+          {loading ? 'Running…' : 'Run Agent'}
+        </button>
+      </div>
 
       <div>
-        <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted">
-          Example Phrases
-        </p>
-        <div className="flex flex-wrap gap-2">
+        <p className="mb-2 text-[11px] font-medium text-muted">Quick phrases</p>
+        <div className="flex flex-wrap gap-1.5">
           {EXAMPLE_PHRASES.map((phrase) => (
             <button
               key={phrase}
               type="button"
               onClick={() => onChange(phrase)}
               disabled={loading}
-              className="rounded-full border border-border bg-surface px-3 py-1.5 text-xs text-secondary shadow-sm transition-all hover:border-primary hover:bg-primary-soft hover:text-primary disabled:opacity-50"
+              className="chip-btn"
             >
               {phrase}
             </button>

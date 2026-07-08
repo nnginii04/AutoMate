@@ -1,4 +1,4 @@
-import { Badge } from '../common/Badge';
+import { AlertTriangle, Thermometer, Battery, Fuel } from 'lucide-react';
 import type { VehicleState } from '../../types/vehicle';
 
 type VehicleContextPanelProps = {
@@ -6,24 +6,31 @@ type VehicleContextPanelProps = {
   loading?: boolean;
 };
 
-function ProgressBar({
+function MiniBar({
   label,
   value,
-  colorClass,
+  icon: Icon,
+  color,
 }: {
   label: string;
   value: number;
-  colorClass: string;
+  icon: typeof Battery;
+  color: string;
 }) {
   return (
-    <div>
-      <div className="mb-1.5 flex items-center justify-between">
-        <span className="text-xs font-medium text-secondary">{label}</span>
-        <span className="text-xs font-semibold text-foreground">{value}%</span>
+    <div className="flex-1">
+      <div className="mb-1 flex items-center justify-between">
+        <span className="flex items-center gap-1 text-[11px] font-medium text-secondary">
+          <Icon className="h-3 w-3" strokeWidth={2} />
+          {label}
+        </span>
+        <span className="text-xs font-bold tabular-nums text-foreground">
+          {value}%
+        </span>
       </div>
-      <div className="h-2 overflow-hidden rounded-full bg-surface-muted">
+      <div className="h-1.5 overflow-hidden rounded-full bg-border">
         <div
-          className={`h-full rounded-full transition-all ${colorClass}`}
+          className={`h-full rounded-full ${color}`}
           style={{ width: `${Math.min(100, Math.max(0, value))}%` }}
         />
       </div>
@@ -31,139 +38,117 @@ function ProgressBar({
   );
 }
 
-function DrivingDot({ isDriving }: { isDriving: boolean }) {
-  return (
-    <span className="inline-flex items-center gap-1.5">
-      <span
-        className={`h-2 w-2 rounded-full ${
-          isDriving ? 'bg-success shadow-[0_0_6px_rgba(22,163,74,0.5)]' : 'bg-muted'
-        }`}
-      />
-      <span className="text-sm font-semibold text-foreground">
-        {isDriving ? 'Driving' : 'Parked'}
-      </span>
-    </span>
-  );
-}
-
-function hasRiskContext(state: VehicleState): boolean {
-  return (
-    state.weather === 'rainy' &&
-    state.window_status === 'open' &&
-    state.is_driving
-  );
+function hasRainWindowWarning(state: VehicleState): boolean {
+  return state.weather === 'rainy' && state.window_status === 'open';
 }
 
 export function VehicleContextPanel({
   vehicleState,
   loading = false,
 }: VehicleContextPanelProps) {
-  const risk = hasRiskContext(vehicleState);
+  const showWarning = hasRainWindowWarning(vehicleState);
 
-  const compactItems = [
-    { label: 'Weather', value: vehicleState.weather },
+  const specs: { label: string; value: string }[] = [
+    { label: 'Location', value: vehicleState.location },
+    { label: 'Driver', value: vehicleState.driver_status },
     { label: 'Window', value: vehicleState.window_status },
     { label: 'A/C', value: vehicleState.air_conditioner_status },
     { label: 'Media', value: vehicleState.media_status },
-    { label: 'Location', value: vehicleState.location },
-    { label: 'Mode', value: vehicleState.driving_mode },
-    { label: 'Driver', value: vehicleState.driver_status },
-    { label: 'Vehicle', value: vehicleState.vehicle_id ?? '—' },
+    {
+      label: 'Passenger',
+      value: `${vehicleState.passenger_count}`,
+    },
   ];
 
   return (
-    <div className="mobility-card p-6">
-      <div className="mb-5 flex items-start justify-between gap-3">
-        <div>
-          <h3 className="text-lg font-semibold text-foreground">
-            Live Vehicle Context
-          </h3>
-          <p className="mt-1 text-sm text-secondary">
-            Real-time vehicle state used for agent decision making.
-          </p>
-        </div>
+    <div className="console-card flex h-full flex-col p-4">
+      <div className="mb-3 flex items-center justify-between">
+        <h3 className="text-sm font-bold text-foreground">Vehicle Cockpit</h3>
         {loading && (
-          <span className="status-pill text-muted">Syncing…</span>
+          <span className="text-[10px] text-muted">syncing</span>
         )}
       </div>
 
-      {risk && (
-        <div className="mb-5">
-          <Badge variant="warning">
-            Risk: Rainy weather with window open while driving
-          </Badge>
+      {showWarning && (
+        <div className="mb-3 flex items-center gap-2 rounded-lg border border-warning/30 bg-warning-soft px-3 py-2">
+          <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-warning" />
+          <span className="text-[11px] font-medium text-warning">
+            Rain detected · Window is open
+          </span>
         </div>
       )}
 
-      {/* Primary gauges */}
-      <div className="mb-6 grid grid-cols-2 gap-4">
-        <div className="rounded-xl border border-border bg-surface-soft p-4">
-          <p className="text-xs font-medium uppercase tracking-wider text-muted">
-            Speed
-          </p>
-          <p className="mt-1 text-3xl font-bold tabular-nums text-foreground">
+      <div className="flex gap-4">
+        {/* Speed cluster */}
+        <div className="flex min-w-[100px] flex-col justify-center rounded-xl border border-border bg-graphite px-4 py-3 text-white">
+          <span className="text-[10px] font-medium text-white/60">Speed</span>
+          <span className="text-4xl font-bold tabular-nums leading-none">
             {vehicleState.speed}
-            <span className="ml-1 text-base font-medium text-secondary">
-              km/h
+          </span>
+          <span className="mt-0.5 text-xs text-white/70">km/h</span>
+          <span className="mt-2 text-[10px] capitalize text-white/50">
+            {vehicleState.driving_mode} mode
+          </span>
+        </div>
+
+        {/* Secondary gauges */}
+        <div className="flex flex-1 flex-col justify-between gap-2">
+          <div className="flex items-center gap-3 rounded-xl border border-border bg-surface-soft px-3 py-2.5">
+            <Thermometer className="h-4 w-4 text-cyan" strokeWidth={2} />
+            <div>
+              <p className="text-[10px] text-muted">Indoor</p>
+              <p className="text-lg font-bold tabular-nums leading-tight">
+                {vehicleState.indoor_temperature}
+                <span className="text-xs font-medium text-secondary">°C</span>
+              </p>
+            </div>
+            <div className="ml-auto text-right">
+              <p className="text-[10px] text-muted">Outdoor</p>
+              <p className="text-sm font-semibold tabular-nums text-secondary">
+                {vehicleState.outdoor_temperature}°C
+              </p>
+            </div>
+          </div>
+
+          <div className="flex gap-3">
+            <MiniBar
+              label="Battery"
+              value={vehicleState.battery_level}
+              icon={Battery}
+              color="bg-primary"
+            />
+            <MiniBar
+              label="Fuel"
+              value={vehicleState.fuel_level}
+              icon={Fuel}
+              color="bg-cyan"
+            />
+          </div>
+
+          <div className="flex items-center gap-1.5">
+            <span
+              className={`h-2 w-2 rounded-full ${
+                vehicleState.is_driving ? 'bg-success' : 'bg-muted'
+              }`}
+            />
+            <span className="text-xs font-medium text-secondary">
+              {vehicleState.is_driving ? 'Driving' : 'Parked'}
             </span>
-          </p>
-        </div>
-        <div className="rounded-xl border border-border bg-surface-soft p-4">
-          <p className="text-xs font-medium uppercase tracking-wider text-muted">
-            Indoor Temp
-          </p>
-          <p className="mt-1 text-3xl font-bold tabular-nums text-foreground">
-            {vehicleState.indoor_temperature}
-            <span className="ml-0.5 text-base font-medium text-secondary">
-              °C
+            <span className="ml-auto text-[11px] capitalize text-muted">
+              {vehicleState.weather}
             </span>
-          </p>
-        </div>
-        <div className="rounded-xl border border-border bg-surface-soft p-4">
-          <p className="text-xs font-medium uppercase tracking-wider text-muted">
-            Battery
-          </p>
-          <p className="mt-1 text-3xl font-bold tabular-nums text-primary">
-            {vehicleState.battery_level}%
-          </p>
-        </div>
-        <div className="rounded-xl border border-border bg-surface-soft p-4">
-          <p className="text-xs font-medium uppercase tracking-wider text-muted">
-            Driving Status
-          </p>
-          <div className="mt-3">
-            <DrivingDot isDriving={vehicleState.is_driving} />
           </div>
         </div>
       </div>
 
-      {/* Progress bars */}
-      <div className="mb-6 space-y-3">
-        <ProgressBar
-          label="Battery Level"
-          value={vehicleState.battery_level}
-          colorClass="bg-primary"
-        />
-        <ProgressBar
-          label="Fuel Level"
-          value={vehicleState.fuel_level}
-          colorClass="bg-cyan"
-        />
-      </div>
-
-      {/* Compact grid */}
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-        {compactItems.map((item) => (
-          <div
-            key={item.label}
-            className="rounded-lg border border-border bg-surface px-3 py-2"
-          >
-            <p className="text-[10px] font-medium uppercase tracking-wide text-muted">
-              {item.label}
-            </p>
-            <p className="mt-0.5 truncate text-xs font-semibold capitalize text-foreground">
-              {item.value}
-            </p>
+      {/* Spec list */}
+      <div className="mt-3 grid grid-cols-3 gap-x-4 gap-y-1.5 border-t border-border pt-3">
+        {specs.map((spec) => (
+          <div key={spec.label} className="flex justify-between gap-2 text-[11px]">
+            <span className="text-muted">{spec.label}</span>
+            <span className="truncate font-medium capitalize text-foreground">
+              {spec.value}
+            </span>
           </div>
         ))}
       </div>

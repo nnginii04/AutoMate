@@ -62,38 +62,41 @@ export function AgentPage() {
   );
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight text-foreground">
-            AutoMate Agent Console
-          </h2>
-          <p className="mt-1 max-w-2xl text-sm text-secondary">
-            Context-aware in-vehicle AI agent for safe tool calling.
-          </p>
+    <div className="space-y-4">
+      {/* Hero Header */}
+      <header>
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+          <div>
+            <h1 className="text-xl font-bold tracking-tight text-foreground">
+              AutoMate Agent Console
+            </h1>
+            <p className="mt-0.5 max-w-xl text-sm leading-relaxed text-secondary">
+              Context-aware vehicle AI agent for intent detection, safety
+              validation, and tool calling.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {statusPills.map((pill) => (
+              <span key={pill.label} className="status-pill">
+                {'dot' in pill && (
+                  <span
+                    className={`h-1.5 w-1.5 rounded-full ${
+                      pill.dot ? 'bg-success' : 'bg-muted'
+                    }`}
+                  />
+                )}
+                {pill.label}
+              </span>
+            ))}
+          </div>
         </div>
-        <div className="flex flex-wrap gap-2">
-          {statusPills.map((pill) => (
-            <span key={pill.label} className="status-pill">
-              {'dot' in pill && (
-                <span
-                  className={`h-1.5 w-1.5 rounded-full ${
-                    pill.dot ? 'bg-success' : 'bg-muted'
-                  }`}
-                />
-              )}
-              {pill.label}
-            </span>
-          ))}
-        </div>
-      </div>
+        <div className="mt-3 h-0.5 rounded-full bg-gradient-to-r from-graphite via-primary to-cyan" />
+        {mockMode && <MockModeBanner className="mt-3" />}
+      </header>
 
-      {mockMode && <MockModeBanner />}
-
-      {/* Main area */}
-      <div className="grid gap-6 xl:grid-cols-2">
-        <div className="mobility-card p-6">
+      {/* Row 1: Command 60% | Cockpit 40% */}
+      <div className="grid gap-4 lg:grid-cols-[3fr_2fr]">
+        <div className="console-card p-4">
           <AgentInput
             value={userInput}
             onChange={setUserInput}
@@ -107,7 +110,7 @@ export function AgentPage() {
         />
       </div>
 
-      {/* Bottom area */}
+      {/* Row 2: Pipeline */}
       <AgentFlowTimeline
         userInput={lastInput}
         vehicleState={vehicleState}
@@ -115,26 +118,28 @@ export function AgentPage() {
         active={hasRun}
       />
 
-      <div className="grid gap-6 xl:grid-cols-2">
+      {/* Row 3: Response 55% | Tool 45% */}
+      <div className="grid gap-4 lg:grid-cols-[11fr_9fr]">
         <AgentResultCard
           result={result}
           loading={agentLoading}
           error={agentError}
         />
-        <div className="mobility-card p-6">
-          <h3 className="mb-1 text-base font-semibold text-foreground">
+        <div className="console-card p-4">
+          <p className="console-label">Tool execution</p>
+          <h3 className="mt-0.5 text-sm font-bold text-foreground">
             Tool Execution Result
           </h3>
-          <p className="mb-5 text-sm text-secondary">
-            Vehicle API tool invocation and execution outcome.
-          </p>
-          <ToolCallCard
-            toolCall={result?.tool_call}
-            toolResult={result?.tool_result}
-          />
+          <div className="mt-3">
+            <ToolCallCard
+              toolCall={result?.tool_call}
+              toolResult={result?.tool_result}
+            />
+          </div>
         </div>
       </div>
 
+      {/* Row 4: Scenario (collapsed) */}
       <VehicleStateEditor
         vehicleState={vehicleState}
         onApply={updateState}

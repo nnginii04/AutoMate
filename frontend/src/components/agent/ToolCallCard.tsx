@@ -1,3 +1,4 @@
+import { Wrench } from 'lucide-react';
 import { JsonViewer } from '../common/JsonViewer';
 import { SuccessBadge, ToolBadge } from '../common/Badge';
 import type { ToolCall, ToolResult } from '../../types/agent';
@@ -10,57 +11,43 @@ type ToolCallCardProps = {
 export function ToolCallCard({ toolCall, toolResult }: ToolCallCardProps) {
   if (!toolCall && !toolResult) {
     return (
-      <div className="rounded-xl border border-border bg-surface-soft px-6 py-10 text-center">
-        <p className="text-sm font-medium text-secondary">No Tool Called</p>
-        <p className="mt-1 text-xs text-muted">
-          The agent responded without invoking a vehicle API tool.
-        </p>
+      <div className="flex items-center gap-2.5 rounded-lg border border-border bg-surface-soft px-3 py-3">
+        <Wrench className="h-3.5 w-3.5 text-muted" strokeWidth={2} />
+        <p className="text-xs text-muted">No tool called</p>
       </div>
     );
   }
 
   return (
-    <div className="grid gap-4 lg:grid-cols-2">
+    <div className="space-y-3">
       {toolCall && (
-        <div className="rounded-xl border border-primary/20 bg-primary-soft/40 p-5">
-          <div className="mb-3 flex items-center gap-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-primary">
-              Tool Call
+        <div>
+          <div className="mb-1.5 flex items-center gap-2">
+            <span className="text-[11px] font-semibold text-secondary">
+              Tool name
             </span>
             <ToolBadge name={toolCall.name} />
           </div>
-          <p className="mb-2 text-xs text-secondary">Arguments</p>
-          <JsonViewer data={toolCall.arguments} maxHeight="12rem" />
+          <p className="mb-1 text-[11px] text-muted">Arguments</p>
+          <JsonViewer data={toolCall.arguments} maxHeight="6rem" />
         </div>
       )}
 
       {toolResult && (
-        <div
-          className={`rounded-xl border p-5 ${
-            toolResult.success
-              ? 'border-success/25 bg-success-soft/40'
-              : 'border-danger/25 bg-danger-soft/40'
-          }`}
-        >
-          <div className="mb-3 flex items-center justify-between gap-2">
-            <span
-              className={`text-xs font-bold uppercase tracking-wider ${
-                toolResult.success ? 'text-success' : 'text-danger'
-              }`}
-            >
-              Tool Result
+        <div className="rounded-lg border border-border bg-surface-soft p-3">
+          <div className="mb-2 flex items-center justify-between">
+            <span className="text-[11px] font-semibold text-secondary">
+              Result message
             </span>
             <SuccessBadge success={toolResult.success} />
           </div>
-          <p className="mb-3 text-sm text-foreground">{toolResult.message}</p>
+          <p className="text-sm text-foreground">{toolResult.message}</p>
           {toolResult.updated_vehicle_state && (
-            <div>
-              <p className="mb-2 text-xs text-secondary">
-                Updated Vehicle State
-              </p>
+            <div className="mt-2">
+              <p className="mb-1 text-[11px] text-muted">Updated vehicle state</p>
               <JsonViewer
                 data={toolResult.updated_vehicle_state}
-                maxHeight="8rem"
+                maxHeight="5rem"
               />
             </div>
           )}

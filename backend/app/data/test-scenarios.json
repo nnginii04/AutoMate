@@ -1,0 +1,251 @@
+{
+  "version": "1.0",
+  "description": "AutoMate integration test scenarios for agent intent, tool, and safety validation.",
+  "scenarios": [
+    {
+      "id": "climate-cold",
+      "name": "Cold cabin comfort",
+      "description": "User feels cold; agent controls climate.",
+      "user_input": "나 좀 추워",
+      "vehicle_state_overrides": { "is_driving": true, "speed": 72 },
+      "expected_intent": "CONTROL_CLIMATE",
+      "expected_tool": "setClimate",
+      "expected_result": { "success": true },
+      "tags": ["climate", "success"]
+    },
+    {
+      "id": "climate-hot",
+      "name": "Hot cabin cooling",
+      "description": "User feels hot; agent cools cabin.",
+      "user_input": "너무 더워",
+      "vehicle_state_overrides": { "is_driving": true, "speed": 60 },
+      "expected_intent": "CONTROL_CLIMATE",
+      "expected_tool": "setClimate",
+      "expected_result": { "success": true },
+      "tags": ["climate", "success"]
+    },
+    {
+      "id": "nav-home",
+      "name": "Navigate home",
+      "description": "User requests navigation to home.",
+      "user_input": "집으로 안내해줘",
+      "vehicle_state_overrides": { "is_driving": true },
+      "expected_intent": "SET_NAVIGATION",
+      "expected_tool": "setNavigation",
+      "expected_result": { "success": true },
+      "tags": ["navigation", "success"]
+    },
+    {
+      "id": "nav-work",
+      "name": "Navigate to work",
+      "description": "User requests navigation to office.",
+      "user_input": "회사로 안내해줘",
+      "vehicle_state_overrides": { "is_driving": true },
+      "expected_intent": "SET_NAVIGATION",
+      "expected_tool": "setNavigation",
+      "expected_result": { "success": true },
+      "tags": ["navigation", "success"]
+    },
+    {
+      "id": "nav-clarification",
+      "name": "Navigation destination unclear",
+      "description": "Navigation without destination should ask for clarification.",
+      "user_input": "안내해줘",
+      "vehicle_state_overrides": {},
+      "expected_intent": "SET_NAVIGATION",
+      "expected_result": { "requires_clarification": true, "success": false },
+      "tags": ["navigation", "clarification", "safety"]
+    },
+    {
+      "id": "media-play",
+      "name": "Play music",
+      "description": "User requests music playback.",
+      "user_input": "음악 틀어줘",
+      "vehicle_state_overrides": { "is_driving": true },
+      "expected_intent": "PLAY_MEDIA",
+      "expected_tool": "playMedia",
+      "expected_result": { "success": true },
+      "tags": ["media", "success"]
+    },
+    {
+      "id": "media-calm",
+      "name": "Play calm music",
+      "description": "User requests quiet music.",
+      "user_input": "조용한 음악 틀어줘",
+      "vehicle_state_overrides": { "is_driving": true },
+      "expected_intent": "PLAY_MEDIA",
+      "expected_tool": "playMedia",
+      "expected_result": { "success": true },
+      "tags": ["media", "success"]
+    },
+    {
+      "id": "call-mom",
+      "name": "Call contact",
+      "description": "User calls a named contact hands-free.",
+      "user_input": "엄마한테 전화해줘",
+      "vehicle_state_overrides": { "is_driving": true },
+      "expected_intent": "MAKE_CALL",
+      "expected_tool": "makeCall",
+      "expected_result": { "success": true },
+      "tags": ["call", "success"]
+    },
+    {
+      "id": "call-clarification",
+      "name": "Call contact unclear",
+      "description": "Call without contact should ask for clarification.",
+      "user_input": "전화해줘",
+      "vehicle_state_overrides": { "is_driving": true },
+      "expected_intent": "MAKE_CALL",
+      "expected_result": { "requires_clarification": true, "success": false },
+      "tags": ["call", "clarification", "safety"]
+    },
+    {
+      "id": "schedule-today",
+      "name": "Read today's schedule",
+      "description": "User asks for calendar schedule.",
+      "user_input": "오늘 일정 알려줘",
+      "vehicle_state_overrides": {},
+      "expected_intent": "READ_SCHEDULE",
+      "expected_tool": "readSchedule",
+      "expected_result": { "success": true },
+      "tags": ["schedule", "success"]
+    },
+    {
+      "id": "window-close",
+      "name": "Close windows while driving",
+      "description": "Closing windows is allowed while driving.",
+      "user_input": "창문 닫아줘",
+      "vehicle_state_overrides": { "is_driving": true, "speed": 60, "window_status": "open" },
+      "expected_intent": "CHANGE_VEHICLE_SETTING",
+      "expected_tool": "changeVehicleSetting",
+      "expected_result": { "success": true },
+      "tags": ["vehicle-setting", "success"]
+    },
+    {
+      "id": "window-open-block",
+      "name": "Block window open while driving",
+      "description": "Opening windows while driving should be blocked.",
+      "user_input": "창문 열어줘",
+      "vehicle_state_overrides": { "is_driving": true, "speed": 60 },
+      "expected_intent": "CHANGE_VEHICLE_SETTING",
+      "expected_result": { "safety_blocked": true, "success": false },
+      "tags": ["safety", "blocked"]
+    },
+    {
+      "id": "display-block",
+      "name": "Block complex display change",
+      "description": "Complex UI changes blocked while driving.",
+      "user_input": "운전 중인데 화면 설정 좀 복잡하게 바꿔줘",
+      "vehicle_state_overrides": { "is_driving": true, "speed": 72 },
+      "expected_intent": "CHANGE_VEHICLE_SETTING",
+      "expected_result": { "safety_blocked": true, "success": false },
+      "tags": ["safety", "blocked"]
+    },
+    {
+      "id": "battery-status",
+      "name": "Battery status check",
+      "description": "User checks battery level.",
+      "user_input": "배터리 상태 확인해줘",
+      "vehicle_state_overrides": {},
+      "expected_intent": "CHECK_VEHICLE_STATUS",
+      "expected_tool": "checkVehicleStatus",
+      "expected_result": { "success": true },
+      "tags": ["status", "success"]
+    },
+    {
+      "id": "fuel-status",
+      "name": "Fuel status check",
+      "description": "User checks fuel level.",
+      "user_input": "연료 잔량 알려줘",
+      "vehicle_state_overrides": {},
+      "expected_intent": "CHECK_VEHICLE_STATUS",
+      "expected_tool": "checkVehicleStatus",
+      "expected_result": { "success": true },
+      "tags": ["status", "success"]
+    },
+    {
+      "id": "drowsy-rest-area",
+      "name": "Drowsy driver rest area",
+      "description": "Drowsy user should be guided to rest area.",
+      "user_input": "졸려",
+      "vehicle_state_overrides": { "is_driving": true, "driver_status": "normal" },
+      "expected_intent": "FIND_NEARBY_PLACE",
+      "expected_tool": "findNearbyPlace",
+      "expected_result": { "success": true },
+      "tags": ["safety", "success"]
+    },
+    {
+      "id": "drowsy-media-priority",
+      "name": "Drowsy driver media request",
+      "description": "Non-critical request while drowsy should prioritize rest guidance.",
+      "user_input": "음악 틀어줘",
+      "vehicle_state_overrides": { "is_driving": true, "driver_status": "drowsy" },
+      "expected_intent": "PLAY_MEDIA",
+      "expected_result": { "requires_clarification": true, "success": false },
+      "tags": ["safety", "clarification"]
+    },
+    {
+      "id": "fallback-unknown",
+      "name": "Unknown intent fallback",
+      "description": "Off-domain request triggers fallback.",
+      "user_input": "아무 농담 해줘",
+      "vehicle_state_overrides": {},
+      "expected_intent": "UNKNOWN",
+      "expected_result": { "fallback": true, "success": false },
+      "tags": ["fallback"]
+    },
+    {
+      "id": "rainy-climate-allowed",
+      "name": "Climate control in rainy context",
+      "description": "Climate control allowed even with rainy/open-window context risk.",
+      "user_input": "나 좀 추워",
+      "vehicle_state_overrides": { "is_driving": true, "weather": "rainy", "window_status": "open" },
+      "expected_intent": "CONTROL_CLIMATE",
+      "expected_tool": "setClimate",
+      "expected_result": { "success": true },
+      "tags": ["climate", "context-risk", "success"]
+    },
+    {
+      "id": "rainy-window-open-block",
+      "name": "Block window open in rain",
+      "description": "Opening windows in rain while driving is blocked.",
+      "user_input": "창문 열어줘",
+      "vehicle_state_overrides": { "is_driving": true, "weather": "rainy", "window_status": "open", "speed": 50 },
+      "expected_intent": "CHANGE_VEHICLE_SETTING",
+      "expected_result": { "safety_blocked": true, "success": false },
+      "tags": ["safety", "blocked", "context-risk"]
+    },
+    {
+      "id": "nearby-rest-explicit",
+      "name": "Find nearby rest area",
+      "description": "User explicitly asks for rest area.",
+      "user_input": "휴게소 찾아줘",
+      "vehicle_state_overrides": { "is_driving": true },
+      "expected_intent": "FIND_NEARBY_PLACE",
+      "expected_tool": "findNearbyPlace",
+      "expected_result": { "success": true },
+      "tags": ["navigation", "success"]
+    },
+    {
+      "id": "wiper-auto",
+      "name": "Enable wiper auto mode",
+      "description": "User enables wipers in rain.",
+      "user_input": "비 와서 와이퍼 켜줘",
+      "vehicle_state_overrides": { "is_driving": true, "weather": "rainy" },
+      "expected_intent": "CHANGE_VEHICLE_SETTING",
+      "expected_tool": "changeVehicleSetting",
+      "expected_result": { "success": true },
+      "tags": ["vehicle-setting", "success"]
+    },
+    {
+      "id": "drowsy-driver-state",
+      "name": "Drowsy driver status blocks navigation",
+      "description": "Navigation request while driver_status is drowsy requires rest priority.",
+      "user_input": "집으로 안내해줘",
+      "vehicle_state_overrides": { "is_driving": true, "driver_status": "drowsy" },
+      "expected_intent": "SET_NAVIGATION",
+      "expected_result": { "requires_clarification": true, "success": false },
+      "tags": ["safety", "clarification"]
+    }
+  ]
+}

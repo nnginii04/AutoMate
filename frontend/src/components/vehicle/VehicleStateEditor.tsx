@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { ChevronDown } from 'lucide-react';
 import type { ApiError } from '../../api/client';
 import type { VehicleState } from '../../types/vehicle';
 
@@ -35,37 +36,19 @@ type FieldConfig = {
 };
 
 const FIELDS: FieldConfig[] = [
-  { key: 'speed', label: 'Speed (km/h)', type: 'number', min: 0, max: 200 },
-  {
-    key: 'indoor_temperature',
-    label: 'Indoor Temp (°C)',
-    type: 'number',
-    min: -10,
-    max: 40,
-  },
-  {
-    key: 'outdoor_temperature',
-    label: 'Outdoor Temp (°C)',
-    type: 'number',
-    min: -30,
-    max: 50,
-  },
-  {
-    key: 'battery_level',
-    label: 'Battery (%)',
-    type: 'number',
-    min: 0,
-    max: 100,
-  },
-  { key: 'fuel_level', label: 'Fuel (%)', type: 'number', min: 0, max: 100 },
-  { key: 'driver_status', label: 'Driver Status', type: 'text' },
+  { key: 'speed', label: 'Speed', type: 'number', min: 0, max: 200 },
+  { key: 'indoor_temperature', label: 'Indoor °C', type: 'number', min: -10, max: 40 },
+  { key: 'outdoor_temperature', label: 'Outdoor °C', type: 'number', min: -30, max: 50 },
+  { key: 'battery_level', label: 'Battery %', type: 'number', min: 0, max: 100 },
+  { key: 'fuel_level', label: 'Fuel %', type: 'number', min: 0, max: 100 },
+  { key: 'driver_status', label: 'Driver', type: 'text' },
   {
     key: 'driving_mode',
-    label: 'Driving Mode',
+    label: 'Mode',
     type: 'select',
     options: ['city', 'highway', 'comfort', 'sport', 'eco'],
   },
-  { key: 'is_driving', label: 'Is Driving', type: 'boolean' },
+  { key: 'is_driving', label: 'Driving', type: 'boolean' },
   {
     key: 'weather',
     label: 'Weather',
@@ -74,19 +57,19 @@ const FIELDS: FieldConfig[] = [
   },
   {
     key: 'window_status',
-    label: 'Window Status',
+    label: 'Window',
     type: 'select',
     options: ['open', 'closed', 'partial'],
   },
   {
     key: 'air_conditioner_status',
-    label: 'A/C Status',
+    label: 'A/C',
     type: 'select',
     options: ['on', 'off', 'heating', 'cooling', 'auto'],
   },
   {
     key: 'media_status',
-    label: 'Media Status',
+    label: 'Media',
     type: 'select',
     options: ['on', 'off', 'playing', 'paused'],
   },
@@ -130,36 +113,31 @@ export function VehicleStateEditor({
     setDraft((prev) => ({ ...prev, [key]: value }));
   };
 
-  const handleApply = () => {
-    void onApply(draft);
-  };
-
   return (
-    <div className="mobility-card overflow-hidden">
-      <details className="group" open>
-        <summary className="cursor-pointer list-none px-6 py-5 [&::-webkit-details-marker]:hidden">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-base font-semibold text-foreground">
-                Scenario Control Panel
-              </h3>
-              <p className="mt-1 text-sm text-secondary">
-                Adjust vehicle context values to test agent behavior.
-              </p>
-            </div>
-            <span className="text-muted transition-transform group-open:rotate-180">
-              ▾
-            </span>
+    <div className="console-card overflow-hidden">
+      <details className="group">
+        <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3 [&::-webkit-details-marker]:hidden">
+          <div>
+            <h3 className="text-sm font-bold text-foreground">
+              Scenario Control Panel
+            </h3>
+            <p className="text-[11px] text-muted">
+              Adjust vehicle context for testing
+            </p>
           </div>
+          <ChevronDown
+            className="h-4 w-4 text-muted transition-transform group-open:rotate-180"
+            strokeWidth={2}
+          />
         </summary>
 
-        <div className="border-t border-border px-6 pb-6 pt-2">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="border-t border-border px-4 pb-4 pt-3">
+          <div className="grid grid-cols-3 gap-3">
             {FIELDS.map((field) => (
               <div key={field.key}>
                 <label
                   htmlFor={`vehicle-${field.key}`}
-                  className="mb-1.5 block text-xs font-medium text-secondary"
+                  className="mb-1 block text-[11px] font-medium text-secondary"
                 >
                   {field.label}
                 </label>
@@ -171,7 +149,7 @@ export function VehicleStateEditor({
                     onChange={(e) =>
                       handleChange(field.key, e.target.value === 'true')
                     }
-                    className="mobility-input"
+                    className="console-input py-1.5"
                   >
                     <option value="true">true</option>
                     <option value="false">false</option>
@@ -181,7 +159,7 @@ export function VehicleStateEditor({
                     id={`vehicle-${field.key}`}
                     value={String(draft[field.key])}
                     onChange={(e) => handleChange(field.key, e.target.value)}
-                    className="mobility-input"
+                    className="console-input py-1.5"
                   >
                     {field.options.map((opt) => (
                       <option key={opt} value={opt}>
@@ -204,27 +182,25 @@ export function VehicleStateEditor({
                           : e.target.value,
                       )
                     }
-                    className="mobility-input"
+                    className="console-input py-1.5"
                   />
                 )}
               </div>
             ))}
           </div>
 
-          <div className="mt-5 flex flex-wrap items-center gap-3">
+          <div className="mt-4 flex items-center justify-end gap-2">
+            {error && (
+              <span className="text-[11px] text-warning">{error.message}</span>
+            )}
             <button
               type="button"
-              onClick={handleApply}
+              onClick={() => void onApply(draft)}
               disabled={loading}
-              className="mobility-btn-secondary"
+              className="console-btn-secondary"
             >
               {loading ? 'Applying…' : 'Apply Changes'}
             </button>
-            {error && (
-              <span className="inline-flex items-center rounded-full border border-warning/25 bg-warning-soft px-3 py-1 text-xs text-warning">
-                {error.message}
-              </span>
-            )}
           </div>
         </div>
       </details>

@@ -215,3 +215,72 @@ export const mockToolUsage: DistributionItem[] = [
 export function findMockLogById(id: number): ExecutionLog | undefined {
   return mockExecutionLogs.find((log) => log.id === id);
 }
+
+export const mockScenarios = [
+  {
+    id: 'climate-cold',
+    name: 'Cold cabin comfort',
+    description: 'User feels cold; agent controls climate.',
+    user_input: '나 좀 추워',
+    vehicle_state_overrides: { is_driving: true, speed: 72 },
+    expected_intent: 'CONTROL_CLIMATE' as const,
+    expected_tool: 'setClimate',
+    expected_result: { success: true },
+    tags: ['climate', 'success'],
+  },
+  {
+    id: 'display-block',
+    name: 'Block complex display change',
+    description: 'Complex UI changes blocked while driving.',
+    user_input: '운전 중인데 화면 설정 좀 복잡하게 바꿔줘',
+    vehicle_state_overrides: { is_driving: true, speed: 72 },
+    expected_intent: 'CHANGE_VEHICLE_SETTING' as const,
+    expected_result: { safety_blocked: true, success: false },
+    tags: ['safety', 'blocked'],
+  },
+  {
+    id: 'fallback-unknown',
+    name: 'Unknown intent fallback',
+    description: 'Off-domain request triggers fallback.',
+    user_input: '아무 농담 해줘',
+    vehicle_state_overrides: {},
+    expected_intent: 'UNKNOWN' as const,
+    expected_result: { fallback: true, success: false },
+    tags: ['fallback'],
+  },
+];
+
+export const mockRunAllScenarios = {
+  batch_id: 'mock-batch-001',
+  summary: {
+    total: 3,
+    passed: 3,
+    failed: 0,
+    intent_accuracy: 1,
+    tool_accuracy: 1,
+    safety_accuracy: 1,
+  },
+  results: mockScenarios.map((scenario, index) => ({
+    scenario_id: scenario.id,
+    scenario_name: scenario.name,
+    passed: true,
+    passed_intent: true,
+    passed_tool: scenario.expected_tool ? true : null,
+    passed_result: true,
+    passed_safety: scenario.tags.includes('safety') ? true : null,
+    checks: { intent: true, result: true },
+    agent_response: {
+      ...mockAgentResponse,
+      intent: scenario.expected_intent ?? 'UNKNOWN',
+      success: scenario.expected_result?.success ?? false,
+      safety_blocked: scenario.expected_result?.safety_blocked ?? false,
+      fallback: scenario.expected_result?.fallback ?? false,
+      requires_clarification:
+        (scenario.expected_result as { requires_clarification?: boolean } | undefined)
+          ?.requires_clarification ?? false,
+      final_response: `Mock response for ${scenario.name}`,
+      latency_ms: 120 + index * 15,
+    },
+  })),
+};
+

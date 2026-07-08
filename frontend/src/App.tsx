@@ -3,6 +3,7 @@ import { AppLayout } from './components/layout/AppLayout';
 import { AgentPage } from './pages/AgentPage';
 import { LogsPage } from './pages/LogsPage';
 import { EvaluationPage } from './pages/EvaluationPage';
+import { ScenarioRunnerPage } from './pages/ScenarioRunnerPage';
 import { PAGE_IDS, type PageId } from './utils/constants';
 
 function renderPage(page: PageId) {
@@ -13,6 +14,8 @@ function renderPage(page: PageId) {
       return <LogsPage />;
     case PAGE_IDS.EVALUATION:
       return <EvaluationPage />;
+    case PAGE_IDS.SCENARIOS:
+      return <ScenarioRunnerPage />;
     default:
       return <AgentPage />;
   }

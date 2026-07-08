@@ -57,4 +57,6 @@ export type AgentRunResponse = {
   failure_reason?: string | null;
   safety_blocked?: boolean;
   fallback?: boolean;
+  requires_clarification?: boolean;
+  nlu_source?: 'llm' | 'rule_based';
 };

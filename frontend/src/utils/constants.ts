@@ -4,6 +4,7 @@ export const PAGE_IDS = {
   AGENT: 'agent',
   LOGS: 'logs',
   EVALUATION: 'evaluation',
+  SCENARIOS: 'scenarios',
 } as const;
 
 export type PageId = (typeof PAGE_IDS)[keyof typeof PAGE_IDS];
@@ -24,18 +25,20 @@ export const NAV_ITEMS: { id: PageId; label: string; description: string }[] = [
     label: 'Evaluation',
     description: 'View performance metrics and distributions',
   },
+  {
+    id: PAGE_IDS.SCENARIOS,
+    label: 'Scenarios',
+    description: 'Run integration test scenarios',
+  },
 ];
 
 export const EXAMPLE_PHRASES = [
   '나 좀 추워',
   '집으로 안내해줘',
-  '운전 중이니까 엄마한테 전화해줘',
+  '엄마한테 전화해줘',
   '졸려',
-  '조용한 노래 틀어줘',
-  '창문 닫아줘',
-  '비 오니까 와이퍼 자동으로 해줘',
   '배터리 상태 확인해줘',
-  '운전 중인데 화면 설정 좀 복잡하게 바꿔줘',
+  '창문 닫아줘',
 ] as const;
 
 export const INTENT_LABELS: Record<string, string> = {
