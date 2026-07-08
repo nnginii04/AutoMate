@@ -33,6 +33,7 @@ class ExecutionLogRepository:
             latency_ms=response.latency_ms,
             safety_blocked=response.safety_blocked,
             fallback=response.fallback,
+            requires_clarification=response.requires_clarification,
         )
         self.db.add(log)
         self.db.commit()
@@ -45,6 +46,11 @@ class ExecutionLogRepository:
 
     def get_by_id(self, log_id: int) -> ExecutionLog | None:
         return self.db.get(ExecutionLog, log_id)
+
+    def delete_all(self) -> int:
+        count = self.db.query(ExecutionLog).delete()
+        self.db.commit()
+        return count
 
     def to_response(self, log: ExecutionLog) -> ExecutionLogResponse:
         return ExecutionLogResponse(

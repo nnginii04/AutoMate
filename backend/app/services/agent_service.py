@@ -9,6 +9,7 @@ from app.nlu import HybridNLU, create_nlu
 from app.repositories import ExecutionLogRepository
 from app.safety import SafetyGuard
 from app.schemas import AgentRunRequest, AgentRunResponse, SafetyDecision, VehicleState
+from app.services.capability_service import CapabilityService, get_capability_service
 from app.services.response_builder import (
     build_clarification_response,
     build_fallback_response,
@@ -29,11 +30,13 @@ class AgentService:
         nlu: HybridNLU | None = None,
         safety_guard: SafetyGuard | None = None,
         tool_registry: ToolRegistry | None = None,
+        capability_service: CapabilityService | None = None,
     ) -> None:
         self.db = db
         self.tool_registry = tool_registry or ToolRegistry()
         self.nlu = nlu or create_nlu(tool_registry=self.tool_registry, settings=get_settings())
         self.safety_guard = safety_guard or SafetyGuard()
+        self.capability_service = capability_service or get_capability_service()
         self.log_repo = ExecutionLogRepository(db)
 
     def run(self, request: AgentRunRequest) -> AgentRunResponse:
@@ -45,9 +48,10 @@ class AgentService:
         snapshot = vehicle_state.to_snapshot()
 
         nlu_result = self.nlu.parse(user_input, vehicle_state)
+        capability = self.capability_service.get(nlu_result.capability_id)
 
         if nlu_result.intent != "UNKNOWN":
-            slot_clarification = self._check_slot_clarification(nlu_result)
+            slot_clarification = self._check_slot_clarification(nlu_result, capability)
             if slot_clarification:
                 response = self._build_response(
                     intent=nlu_result.intent,
@@ -64,7 +68,7 @@ class AgentService:
                 return response
 
         safety = self.safety_guard.evaluate(
-            user_input, nlu_result.intent, vehicle_state, nlu_result.slots
+            user_input, nlu_result.intent, vehicle_state, nlu_result.slots, capability=capability
         )
 
         if safety.blocked:
@@ -101,7 +105,7 @@ class AgentService:
 
         if not safety.allowed:
             response = self._build_response(
-                intent=nlu_result.intent if nlu_result.intent != "UNKNOWN" else "UNKNOWN",
+                intent="UNKNOWN" if nlu_result.intent == "UNKNOWN" else nlu_result.intent,
                 slots=nlu_result.slots,
                 confidence=nlu_result.confidence,
                 final_response=safety.fallback_response or build_fallback_response(),
@@ -116,6 +120,10 @@ class AgentService:
             return response
 
         tool_call = nlu_result.tool_call
+        if tool_call is None and capability is not None:
+            tool_call = self.tool_registry.build_tool_call_by_name(
+                capability.tool_name, nlu_result.slots, user_input
+            )
         if tool_call is None:
             tool_call = self.tool_registry.build_tool_call(
                 nlu_result.intent, nlu_result.slots, user_input
@@ -127,10 +135,14 @@ class AgentService:
             if tool_result.updated_vehicle_state:
                 vehicle_state_store.apply_tool_updates(tool_result.updated_vehicle_state)
 
-        final_response = build_final_response(
-            nlu_result.intent, user_input, tool_result, vehicle_state
-        )
-        final_response = self._prepend_safety_context(final_response, safety)
+        if capability is not None:
+            final_response = self.capability_service.render_success(
+                capability, nlu_result.slots, tool_result, vehicle_state
+            )
+        else:
+            final_response = build_final_response(
+                nlu_result.intent, user_input, tool_result, vehicle_state
+            )
 
         response = self._build_response(
             intent=nlu_result.intent,
@@ -148,7 +160,15 @@ class AgentService:
         self._persist(user_input, snapshot, response)
         return response
 
-    def _check_slot_clarification(self, nlu_result) -> str | None:
+    def _check_slot_clarification(self, nlu_result, capability=None) -> str | None:
+        if capability is not None:
+            missing = self.capability_service.missing_required(capability, nlu_result.slots)
+            if not missing:
+                return None
+            if capability.clarification_question:
+                return capability.clarification_question
+            return build_slot_clarification_response(capability.tool_name, missing)
+
         tool_call = nlu_result.tool_call
         if tool_call is None:
             tool_call = self.tool_registry.build_tool_call(
@@ -161,15 +181,6 @@ class AgentService:
         if not missing:
             return None
         return build_slot_clarification_response(tool_call.name, missing)
-
-    @staticmethod
-    def _prepend_safety_context(final_response: str, safety: SafetyDecision) -> str:
-        if safety.fallback_response and safety.allowed:
-            return f"{safety.fallback_response} {final_response}"
-        if safety.reason and safety.risk_level in ("medium", "high", "critical") and safety.allowed:
-            if safety.reason.startswith("Context risk:"):
-                return f"{safety.reason.split('.')[0]}. {final_response}"
-        return final_response
 
     def _build_response(
         self,
@@ -189,7 +200,11 @@ class AgentService:
         safety_decision: SafetyDecision | None = None,
         nlu_source: str = "rule_based",
     ) -> AgentRunResponse:
-        latency_ms = int((time.perf_counter() - started) * 1000)
+        latency_ms = max(1, int((time.perf_counter() - started) * 1000))
+        if safety_blocked or fallback or requires_clarification:
+            tool_call = None
+            tool_result = None
+
         return AgentRunResponse(
             intent=intent,
             slots=slots,

@@ -19,12 +19,17 @@ class FindNearbyPlaceTool(VehicleTool[FindNearbyPlaceArgs]):
             "radius_km": slots.get("radius_km", 10),
         }
 
+    _PLACE_LABELS = {
+        "rest_area": "휴게소",
+        "gas_station": "주유소",
+        "charging_station": "충전소",
+        "cafe": "카페",
+    }
+
     def execute(self, arguments: FindNearbyPlaceArgs, vehicle_state: VehicleState) -> ToolResult:
+        label = self._PLACE_LABELS.get(arguments.place_type, arguments.place_type)
         return ToolResult(
             success=True,
             tool_name=self.name,
-            message=(
-                f"Found nearby {arguments.place_type} "
-                f"within {arguments.radius_km}km"
-            ),
+            message=f"{int(arguments.radius_km)}km 이내 가까운 {label}를 찾았습니다. 안내를 시작할까요?",
         )

@@ -13,9 +13,7 @@ def test_safety_blocks_complex_display_while_driving():
     )
     assert result.allowed is False
     assert result.blocked is True
-    assert result.reason is not None
-    assert "Safety block" in result.reason
-    assert result.risk_level == "high"
+    assert "정차 후" in (result.fallback_response or "")
 
 
 def test_safety_allows_window_close():

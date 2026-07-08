@@ -117,6 +117,26 @@ class ToolRegistry:
 
         return ToolCall(name=tool_name, arguments=arguments)
 
+    def build_tool_call_by_name(
+        self,
+        tool_name: str,
+        slots: Dict[str, Any],
+        user_input: str,
+    ) -> Optional[ToolCall]:
+        """Build a validated tool call for an explicit tool name (capability path)."""
+        tool = self._tools.get(tool_name)
+        if not tool:
+            return None
+
+        raw_arguments = tool.build_arguments(slots, user_input)
+        try:
+            validated = tool.argument_schema.model_validate(raw_arguments)
+            arguments = validated.model_dump()
+        except ValidationError:
+            arguments = raw_arguments
+
+        return ToolCall(name=tool_name, arguments=arguments)
+
     def execute(self, tool_call: ToolCall, vehicle_state: VehicleState) -> ToolResult:
         tool = self._tools.get(tool_call.name)
         if not tool:

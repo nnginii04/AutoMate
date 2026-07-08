@@ -246,6 +246,192 @@
       "expected_intent": "SET_NAVIGATION",
       "expected_result": { "requires_clarification": true, "success": false },
       "tags": ["safety", "clarification"]
+    },
+    {
+      "id": "TC-RAIN-001",
+      "name": "Rain weather status check",
+      "description": "Report rainy weather and suggest closing windows.",
+      "user_input": "밖에 비가 와",
+      "vehicle_state_overrides": { "weather": "rainy", "window_status": "open", "is_driving": true },
+      "expected_intent": "CHECK_VEHICLE_STATUS",
+      "expected_tool": "checkVehicleStatus",
+      "expected_result": { "success": true },
+      "tags": ["status", "context-risk", "success"]
+    },
+    {
+      "id": "TC-SMELL-001",
+      "name": "Outside smell recirculation",
+      "description": "Switch to recirculation when outside smell detected.",
+      "user_input": "밖에서 소똥냄새나",
+      "vehicle_state_overrides": { "window_status": "open", "air_conditioner_status": "off", "is_driving": true },
+      "expected_intent": "CONTROL_CLIMATE",
+      "expected_tool": "setClimate",
+      "expected_result": { "success": true },
+      "tags": ["climate", "context-risk", "success"]
+    },
+    {
+      "id": "TC-VOLUME-001",
+      "name": "Lower media volume",
+      "description": "Reduce volume while driving.",
+      "user_input": "소리 줄여줘",
+      "vehicle_state_overrides": { "media_status": "on", "is_driving": true },
+      "expected_intent": "CHANGE_VEHICLE_SETTING",
+      "expected_tool": "changeVehicleSetting",
+      "expected_result": { "success": true },
+      "tags": ["vehicle-setting", "success"]
+    },
+    {
+      "id": "TC-GLARE-001",
+      "name": "Reduce display brightness for glare",
+      "description": "Lower brightness when driver reports glare.",
+      "user_input": "눈부셔",
+      "vehicle_state_overrides": { "is_driving": true, "time": "15:20" },
+      "expected_intent": "CHANGE_VEHICLE_SETTING",
+      "expected_tool": "changeVehicleSetting",
+      "expected_result": { "success": true },
+      "tags": ["vehicle-setting", "success"]
+    },
+    {
+      "id": "climate-hands-cold",
+      "name": "Cold hands heating",
+      "description": "User reports cold hands; agent turns on heating.",
+      "user_input": "손시려워",
+      "vehicle_state_overrides": { "is_driving": true },
+      "expected_intent": "CONTROL_CLIMATE",
+      "expected_tool": "setClimate",
+      "expected_result": { "success": true },
+      "tags": ["climate", "success"]
+    },
+    {
+      "id": "climate-stuffy",
+      "name": "Stuffy cabin ventilation",
+      "description": "User feels stuffy; agent switches to fresh air.",
+      "user_input": "차 안이 답답해",
+      "vehicle_state_overrides": { "is_driving": true },
+      "expected_intent": "CONTROL_CLIMATE",
+      "expected_tool": "setClimate",
+      "expected_result": { "success": true },
+      "tags": ["climate", "success"]
+    },
+    {
+      "id": "climate-defrost",
+      "name": "Windshield defrost",
+      "description": "User asks to remove windshield frost.",
+      "user_input": "앞유리 성에 제거해줘",
+      "vehicle_state_overrides": { "is_driving": true, "weather": "rainy" },
+      "expected_intent": "CONTROL_CLIMATE",
+      "expected_tool": "setClimate",
+      "expected_result": { "success": true },
+      "tags": ["climate", "success"]
+    },
+    {
+      "id": "nav-seoul-station",
+      "name": "Navigate to Seoul Station",
+      "description": "User requests navigation to Seoul Station.",
+      "user_input": "서울역으로 가고싶어",
+      "vehicle_state_overrides": { "is_driving": true },
+      "expected_intent": "SET_NAVIGATION",
+      "expected_tool": "setNavigation",
+      "expected_result": { "success": true },
+      "tags": ["navigation", "success"]
+    },
+    {
+      "id": "nav-eta-seoul",
+      "name": "ETA to Seoul Station",
+      "description": "User asks how long it takes to Seoul Station.",
+      "user_input": "서울역까지 얼마나 걸려",
+      "vehicle_state_overrides": { "is_driving": true },
+      "expected_intent": "SET_NAVIGATION",
+      "expected_tool": "setNavigation",
+      "expected_result": { "success": true },
+      "tags": ["navigation", "success"]
+    },
+    {
+      "id": "nav-clarification-noword",
+      "name": "Navigation without destination",
+      "description": "Generic guidance request without a destination asks for clarification.",
+      "user_input": "길 안내해줘",
+      "vehicle_state_overrides": { "is_driving": true },
+      "expected_intent": "SET_NAVIGATION",
+      "expected_result": { "requires_clarification": true, "success": false },
+      "tags": ["navigation", "clarification", "safety"]
+    },
+    {
+      "id": "status-indoor-temp",
+      "name": "Indoor temperature check",
+      "description": "User checks the cabin temperature.",
+      "user_input": "실내 온도 몇 도야?",
+      "vehicle_state_overrides": {},
+      "expected_intent": "CHECK_VEHICLE_STATUS",
+      "expected_tool": "checkVehicleStatus",
+      "expected_result": { "success": true },
+      "tags": ["status", "success"]
+    },
+    {
+      "id": "status-weather-now",
+      "name": "Current weather check",
+      "description": "User asks about the current weather.",
+      "user_input": "지금 날씨 어때?",
+      "vehicle_state_overrides": { "weather": "rainy", "window_status": "closed" },
+      "expected_intent": "CHECK_VEHICLE_STATUS",
+      "expected_tool": "checkVehicleStatus",
+      "expected_result": { "success": true },
+      "tags": ["status", "success"]
+    },
+    {
+      "id": "volume-up",
+      "name": "Raise media volume",
+      "description": "User raises the media volume.",
+      "user_input": "소리 키워줘",
+      "vehicle_state_overrides": { "media_status": "on", "is_driving": true },
+      "expected_intent": "CHANGE_VEHICLE_SETTING",
+      "expected_tool": "changeVehicleSetting",
+      "expected_result": { "success": true },
+      "tags": ["vehicle-setting", "success"]
+    },
+    {
+      "id": "nearby-gas",
+      "name": "Find nearby gas station",
+      "description": "User looks for a nearby gas station.",
+      "user_input": "가까운 주유소 찾아줘",
+      "vehicle_state_overrides": { "is_driving": true },
+      "expected_intent": "FIND_NEARBY_PLACE",
+      "expected_tool": "findNearbyPlace",
+      "expected_result": { "success": true },
+      "tags": ["navigation", "success"]
+    },
+    {
+      "id": "nearby-cafe",
+      "name": "Find nearby cafe",
+      "description": "User looks for a nearby cafe.",
+      "user_input": "근처 카페 찾아줘",
+      "vehicle_state_overrides": { "is_driving": true },
+      "expected_intent": "FIND_NEARBY_PLACE",
+      "expected_tool": "findNearbyPlace",
+      "expected_result": { "success": true },
+      "tags": ["navigation", "success"]
+    },
+    {
+      "id": "call-general-contact",
+      "name": "Call a named contact",
+      "description": "User calls a specific person hands-free.",
+      "user_input": "정예진한테 전화해줘",
+      "vehicle_state_overrides": { "is_driving": true },
+      "expected_intent": "MAKE_CALL",
+      "expected_tool": "makeCall",
+      "expected_result": { "success": true },
+      "tags": ["call", "success"]
+    },
+    {
+      "id": "door-lock",
+      "name": "Lock the doors",
+      "description": "User locks the vehicle doors.",
+      "user_input": "문 잠가줘",
+      "vehicle_state_overrides": { "is_driving": true },
+      "expected_intent": "CHANGE_VEHICLE_SETTING",
+      "expected_tool": "changeVehicleSetting",
+      "expected_result": { "success": true },
+      "tags": ["vehicle-setting", "success"]
     }
   ]
 }

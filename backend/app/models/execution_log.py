@@ -27,6 +27,7 @@ class ExecutionLog(Base):
     latency_ms: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     safety_blocked: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     fallback: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    requires_clarification: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),

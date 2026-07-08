@@ -30,3 +30,10 @@ def get_log(log_id: int, db: Session = Depends(get_db)) -> ExecutionLogResponse:
     if not log:
         raise HTTPException(status_code=404, detail=f"Log {log_id} not found")
     return log
+
+
+@router.delete("/logs")
+def clear_logs(db: Session = Depends(get_db)) -> dict:
+    """Development helper: delete all execution logs."""
+    deleted = LogService(db).clear_logs()
+    return {"deleted": deleted}

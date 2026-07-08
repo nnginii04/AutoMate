@@ -19,6 +19,9 @@ class LogService:
             return None
         return self.repo.to_response(log)
 
+    def clear_logs(self) -> int:
+        return self.repo.delete_all()
+
 
 class EvaluationService:
     def __init__(self, db: Session) -> None:

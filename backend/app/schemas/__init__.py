@@ -34,6 +34,8 @@ class VehicleState(BaseModel):
     window_status: str = "closed"
     air_conditioner_status: str = "off"
     media_status: str = "off"
+    media_volume: float = 50
+    display_brightness: str = "medium"
 
     def merge(self, partial: Dict[str, Any]) -> VehicleState:
         return self.model_copy(update={k: v for k, v in partial.items() if v is not None})
@@ -116,6 +118,7 @@ class NLUResult(BaseModel):
     tool_call: Optional[ToolCall] = None
     source: Literal["llm", "rule_based"] = "rule_based"
     parse_error: Optional[str] = None
+    capability_id: Optional[str] = None
 
 
 class SafetyDecision(BaseModel):

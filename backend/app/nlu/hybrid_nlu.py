@@ -36,8 +36,8 @@ class HybridNLU:
                 return self.llm_nlu.parse(user_input, state)
             except (LLMParseError, LLMRequestError) as exc:
                 logger.warning("LLM NLU failed, falling back to rule-based NLU: %s", exc)
-                fallback = self.rule_based.parse(user_input)
+                fallback = self.rule_based.parse(user_input, state)
                 fallback.parse_error = str(exc)
                 return fallback
 
-        return self.rule_based.parse(user_input)
+        return self.rule_based.parse(user_input, state)

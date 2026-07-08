@@ -25,11 +25,14 @@ class MakeCallTool(VehicleTool[MakeCallArgs]):
             return ["contact"]
         return []
 
+    _CONTACT_LABELS = {"mother": "엄마", "father": "아빠"}
+
     def execute(self, arguments: MakeCallArgs, vehicle_state: VehicleState) -> ToolResult:
-        mode = "hands-free" if arguments.hands_free else "standard"
+        label = self._CONTACT_LABELS.get(arguments.contact, arguments.contact)
+        mode = "핸즈프리로 " if arguments.hands_free else ""
         return ToolResult(
             success=True,
             tool_name=self.name,
-            message=f"Calling {arguments.contact} ({mode})",
+            message=f"{label}님에게 {mode}전화를 겁니다.",
             updated_vehicle_state={"media_status": "paused"},
         )

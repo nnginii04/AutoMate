@@ -14,8 +14,11 @@ class SetNavigationTool(VehicleTool[SetNavigationArgs]):
     supported_intents = ("SET_NAVIGATION",)
 
     def build_arguments(self, slots: Dict[str, Any], user_input: str) -> Dict[str, Any]:
+        destination = slots.get("destination", "custom")
+        if destination == "work":
+            destination = "company"
         return {
-            "destination": slots.get("destination", "home"),
+            "destination": destination,
             "route_type": slots.get("route_type", "fastest"),
         }
 
@@ -25,9 +28,12 @@ class SetNavigationTool(VehicleTool[SetNavigationArgs]):
             return ["destination"]
         return []
 
+    _DESTINATION_LABELS = {"home": "집", "company": "회사", "work": "회사"}
+
     def execute(self, arguments: SetNavigationArgs, vehicle_state: VehicleState) -> ToolResult:
+        label = self._DESTINATION_LABELS.get(arguments.destination, arguments.destination)
         return ToolResult(
             success=True,
             tool_name=self.name,
-            message=f"Navigation to {arguments.destination} started",
+            message=f"{label}까지 경로 안내를 시작합니다.",
         )
