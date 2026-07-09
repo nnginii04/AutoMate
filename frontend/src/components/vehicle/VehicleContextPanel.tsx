@@ -50,6 +50,9 @@ export function VehicleContextPanel({
 
   const specs: { label: string; value: string }[] = [
     { label: 'Location', value: vehicleState.location },
+    { label: 'Road', value: vehicleState.road_name ?? '—' },
+    { label: 'Road Type', value: vehicleState.road_type ?? '—' },
+    { label: 'School Zone', value: vehicleState.is_school_zone ? 'yes' : 'no' },
     { label: 'Driver', value: vehicleState.driver_status },
     { label: 'Window', value: vehicleState.window_status },
     { label: 'A/C', value: vehicleState.air_conditioner_status },
@@ -86,6 +89,11 @@ export function VehicleContextPanel({
             {vehicleState.speed}
           </span>
           <span className="mt-0.5 text-xs text-white/70">km/h</span>
+          {vehicleState.speed_limit != null && (
+            <span className="mt-1 text-[10px] text-white/60">
+              Limit {vehicleState.speed_limit} km/h
+            </span>
+          )}
           <span className="mt-2 text-[10px] capitalize text-white/50">
             {vehicleState.driving_mode} mode
           </span>

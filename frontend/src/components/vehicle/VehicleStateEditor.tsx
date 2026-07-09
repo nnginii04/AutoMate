@@ -17,6 +17,11 @@ type EditableFields = Pick<
   | 'window_status'
   | 'air_conditioner_status'
   | 'media_status'
+  | 'road_name'
+  | 'road_type'
+  | 'speed_limit'
+  | 'is_school_zone'
+  | 'navigation_active'
 >;
 
 type VehicleStateEditorProps = {
@@ -37,6 +42,16 @@ type FieldConfig = {
 
 const FIELDS: FieldConfig[] = [
   { key: 'speed', label: 'Speed', type: 'number', min: 0, max: 200 },
+  { key: 'speed_limit', label: 'Speed Limit', type: 'number', min: 0, max: 200 },
+  { key: 'road_name', label: 'Road Name', type: 'text' },
+  {
+    key: 'road_type',
+    label: 'Road Type',
+    type: 'select',
+    options: ['highway', 'urban', 'local', 'school_zone'],
+  },
+  { key: 'is_school_zone', label: 'School Zone', type: 'boolean' },
+  { key: 'navigation_active', label: 'Navigation', type: 'boolean' },
   { key: 'indoor_temperature', label: 'Indoor °C', type: 'number', min: -10, max: 40 },
   { key: 'outdoor_temperature', label: 'Outdoor °C', type: 'number', min: -30, max: 50 },
   { key: 'battery_level', label: 'Battery %', type: 'number', min: 0, max: 100 },
@@ -89,6 +104,11 @@ function pickEditable(state: VehicleState): EditableFields {
     window_status: state.window_status,
     air_conditioner_status: state.air_conditioner_status,
     media_status: state.media_status,
+    road_name: state.road_name ?? '',
+    road_type: state.road_type ?? 'urban',
+    speed_limit: state.speed_limit ?? 60,
+    is_school_zone: state.is_school_zone ?? false,
+    navigation_active: state.navigation_active ?? true,
   };
 }
 

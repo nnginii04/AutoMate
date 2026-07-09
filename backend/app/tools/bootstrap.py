@@ -6,6 +6,7 @@ from app.tools.climate import SetClimateTool
 from app.tools.media import PlayMediaTool
 from app.tools.navigation import SetNavigationTool
 from app.tools.nearby import FindNearbyPlaceTool
+from app.tools.road_context import CheckRoadContextTool
 from app.tools.schedule import ReadScheduleTool
 from app.tools.status import CheckVehicleStatusTool
 from app.tools.vehicle_setting import ChangeVehicleSettingTool
@@ -19,6 +20,7 @@ def build_default_tools() -> list[VehicleTool]:
         PlayMediaTool(),
         MakeCallTool(),
         CheckVehicleStatusTool(),
+        CheckRoadContextTool(),
         FindNearbyPlaceTool(),
         ChangeVehicleSettingTool(),
         ReadScheduleTool(),

@@ -38,6 +38,7 @@ export const EXAMPLE_PHRASES = [
   '엄마한테 전화해줘',
   '졸려',
   '배터리 상태 확인해줘',
+  '지금 제한속도 몇이야?',
   '창문 닫아줘',
 ] as const;
 
@@ -49,6 +50,7 @@ export const INTENT_LABELS: Record<string, string> = {
   READ_SCHEDULE: 'Schedule',
   CHANGE_VEHICLE_SETTING: 'Vehicle Setting',
   CHECK_VEHICLE_STATUS: 'Vehicle Status',
+  CHECK_ROAD_CONTEXT: 'Road Context',
   FIND_NEARBY_PLACE: 'Nearby Place',
   UNKNOWN: 'Unknown',
 };

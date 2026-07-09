@@ -47,6 +47,7 @@ def test_tool_registry_exports_openai_schemas():
         "playMedia",
         "makeCall",
         "checkVehicleStatus",
+        "checkRoadContext",
         "findNearbyPlace",
         "changeVehicleSetting",
         "readSchedule",
@@ -68,7 +69,7 @@ def test_llm_nlu_parses_tool_call():
     assert result.tool_call is not None
     assert result.tool_call.name == "setClimate"
     assert result.tool_call.arguments["temperature"] == 26
-    assert len(client.last_request["tools"]) == 8
+    assert len(client.last_request["tools"]) == 9
 
 
 def test_llm_nlu_parse_failure_raises():

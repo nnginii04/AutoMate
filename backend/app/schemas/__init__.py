@@ -12,6 +12,7 @@ IntentType = Literal[
     "READ_SCHEDULE",
     "CHANGE_VEHICLE_SETTING",
     "CHECK_VEHICLE_STATUS",
+    "CHECK_ROAD_CONTEXT",
     "FIND_NEARBY_PLACE",
     "UNKNOWN",
 ]
@@ -36,9 +37,21 @@ class VehicleState(BaseModel):
     media_status: str = "off"
     media_volume: float = 50
     display_brightness: str = "medium"
+    road_name: Optional[str] = "대전 유성대로"
+    road_type: str = "urban"
+    speed_limit: Optional[float] = 60
+    is_school_zone: bool = False
+    navigation_active: bool = True
 
     def merge(self, partial: Dict[str, Any]) -> VehicleState:
-        return self.model_copy(update={k: v for k, v in partial.items() if v is not None})
+        nullable_keys = {"road_name", "speed_limit", "vehicle_id"}
+        return self.model_copy(
+            update={
+                k: v
+                for k, v in partial.items()
+                if v is not None or k in nullable_keys
+            }
+        )
 
     def to_snapshot(self) -> Dict[str, Any]:
         return self.model_dump()
@@ -54,6 +67,7 @@ class ToolResult(BaseModel):
     tool_name: Optional[str] = None
     message: str
     updated_vehicle_state: Optional[Dict[str, Any]] = None
+    data: Optional[Dict[str, Any]] = None
 
 
 class AgentRunRequest(BaseModel):

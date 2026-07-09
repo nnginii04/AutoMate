@@ -432,6 +432,112 @@
       "expected_tool": "changeVehicleSetting",
       "expected_result": { "success": true },
       "tags": ["vehicle-setting", "success"]
+    },
+    {
+      "id": "TC-ROAD-001",
+      "name": "Current speed limit check",
+      "description": "User asks for the current road speed limit while speeding.",
+      "user_input": "지금 제한속도 몇이야?",
+      "vehicle_state_overrides": {
+        "speed": 72,
+        "speed_limit": 60,
+        "road_name": "대전 유성대로",
+        "road_type": "urban",
+        "is_driving": true,
+        "is_school_zone": false
+      },
+      "expected_intent": "CHECK_ROAD_CONTEXT",
+      "expected_tool": "checkRoadContext",
+      "expected_result": { "success": true },
+      "tags": ["road-context", "success"]
+    },
+    {
+      "id": "TC-ROAD-002",
+      "name": "Speeding status on highway",
+      "description": "User asks if they are speeding on the highway.",
+      "user_input": "나 과속 중이야?",
+      "vehicle_state_overrides": {
+        "speed": 95,
+        "speed_limit": 80,
+        "road_name": "경부고속도로",
+        "road_type": "highway",
+        "is_driving": true,
+        "is_school_zone": false
+      },
+      "expected_intent": "CHECK_ROAD_CONTEXT",
+      "expected_tool": "checkRoadContext",
+      "expected_result": { "success": true },
+      "tags": ["road-context", "success"]
+    },
+    {
+      "id": "TC-ROAD-003",
+      "name": "Speed within limit",
+      "description": "User asks if current speed is okay while within limit.",
+      "user_input": "속도 괜찮아?",
+      "vehicle_state_overrides": {
+        "speed": 55,
+        "speed_limit": 60,
+        "road_name": "대전 유성대로",
+        "road_type": "urban",
+        "is_driving": true,
+        "is_school_zone": false
+      },
+      "expected_intent": "CHECK_ROAD_CONTEXT",
+      "expected_tool": "checkRoadContext",
+      "expected_result": { "success": true },
+      "tags": ["road-context", "success"]
+    },
+    {
+      "id": "TC-ROAD-004",
+      "name": "School zone check",
+      "description": "User asks if the current road is a school zone.",
+      "user_input": "여기 어린이 보호구역이야?",
+      "vehicle_state_overrides": {
+        "speed": 35,
+        "speed_limit": 30,
+        "road_name": "어린이보호구역",
+        "road_type": "school_zone",
+        "is_driving": true,
+        "is_school_zone": true
+      },
+      "expected_intent": "CHECK_ROAD_CONTEXT",
+      "expected_tool": "checkRoadContext",
+      "expected_result": { "success": true },
+      "tags": ["road-context", "success"]
+    },
+    {
+      "id": "TC-ROAD-005",
+      "name": "Current road name",
+      "description": "User asks for the current road name.",
+      "user_input": "지금 도로 이름 뭐야?",
+      "vehicle_state_overrides": {
+        "speed": 45,
+        "speed_limit": 50,
+        "road_name": "세종로",
+        "road_type": "urban",
+        "is_driving": true,
+        "is_school_zone": false
+      },
+      "expected_intent": "CHECK_ROAD_CONTEXT",
+      "expected_tool": "checkRoadContext",
+      "expected_result": { "success": true },
+      "tags": ["road-context", "success"]
+    },
+    {
+      "id": "TC-ROAD-006",
+      "name": "Speed limit unavailable",
+      "description": "Road speed limit data is missing.",
+      "user_input": "지금 제한속도 몇이야?",
+      "vehicle_state_overrides": {
+        "speed": 45,
+        "speed_limit": null,
+        "road_name": null,
+        "is_driving": true
+      },
+      "expected_intent": "CHECK_ROAD_CONTEXT",
+      "expected_tool": "checkRoadContext",
+      "expected_result": { "success": false },
+      "tags": ["road-context", "failure"]
     }
   ]
 }

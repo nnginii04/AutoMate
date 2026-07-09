@@ -75,3 +75,14 @@ class ChangeVehicleSettingArgs(BaseModel):
 
 class ReadScheduleArgs(BaseModel):
     range: Literal["today", "week"] = "today"
+
+
+class CheckRoadContextArgs(BaseModel):
+    target: Literal[
+        "speed_limit",
+        "speeding_status",
+        "road_name",
+        "road_type",
+        "school_zone",
+        "overall",
+    ] = "speed_limit"

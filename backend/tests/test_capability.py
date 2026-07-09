@@ -29,6 +29,7 @@ def test_catalog_loads_with_all_categories(service):
         "phone",
         "vehicle_setting",
         "vehicle_status",
+        "road_context",
         "nearby_place",
     } <= categories
     assert len(service.all()) >= 20

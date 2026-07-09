@@ -15,6 +15,11 @@ export type VehicleState = {
   window_status: string;
   air_conditioner_status: string;
   media_status: string;
+  road_name?: string | null;
+  road_type?: string;
+  speed_limit?: number | null;
+  is_school_zone?: boolean;
+  navigation_active?: boolean;
 };
 
 export type Intent =
@@ -25,6 +30,7 @@ export type Intent =
   | 'READ_SCHEDULE'
   | 'CHANGE_VEHICLE_SETTING'
   | 'CHECK_VEHICLE_STATUS'
+  | 'CHECK_ROAD_CONTEXT'
   | 'FIND_NEARBY_PLACE'
   | 'UNKNOWN';
 
@@ -38,6 +44,7 @@ export type ToolResult = {
   tool_name?: string;
   message: string;
   updated_vehicle_state?: Partial<VehicleState>;
+  data?: Record<string, unknown>;
 };
 
 export type AgentRunRequest = {

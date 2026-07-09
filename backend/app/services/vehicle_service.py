@@ -22,6 +22,11 @@ DEFAULT_VEHICLE_STATE = VehicleState(
     window_status="open",
     air_conditioner_status="off",
     media_status="off",
+    road_name="대전 유성대로",
+    road_type="urban",
+    speed_limit=60,
+    is_school_zone=False,
+    navigation_active=True,
 )
 
 

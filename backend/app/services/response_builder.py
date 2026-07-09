@@ -34,6 +34,9 @@ def build_final_response(
             return "현재 비가 오고 있어요. 창문이 열려 있으니 닫는 것을 추천드려요."
         return "차량 상태를 확인했습니다."
 
+    if intent == "CHECK_ROAD_CONTEXT":
+        return "도로 주행 정보를 확인했습니다."
+
     if intent == "CHANGE_VEHICLE_SETTING":
         return "차량 설정을 변경했습니다."
 

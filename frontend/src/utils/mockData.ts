@@ -20,6 +20,11 @@ export const defaultVehicleState: VehicleState = {
   window_status: 'open',
   air_conditioner_status: 'off',
   media_status: 'off',
+  road_name: '대전 유성대로',
+  road_type: 'urban',
+  speed_limit: 60,
+  is_school_zone: false,
+  navigation_active: true,
 };
 
 export const mockVehicleState: VehicleState = defaultVehicleState;

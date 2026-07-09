@@ -13,6 +13,7 @@ def test_tool_registry_lists_all_required_tools():
         "playMedia",
         "makeCall",
         "checkVehicleStatus",
+        "checkRoadContext",
         "findNearbyPlace",
         "changeVehicleSetting",
         "readSchedule",

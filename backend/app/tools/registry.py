@@ -90,6 +90,9 @@ class ToolRegistry:
         if intent == "CHECK_VEHICLE_STATUS":
             return "checkVehicleStatus"
 
+        if intent == "CHECK_ROAD_CONTEXT":
+            return "checkRoadContext"
+
         return candidates[0]
 
     def build_tool_call(
