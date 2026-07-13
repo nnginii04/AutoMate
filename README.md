@@ -133,7 +133,23 @@ AutoMate/
 
 ## 빠른 시작
 
-### 사전 요구사항
+### 옵션 A. Docker (원클릭 실행, 권장)
+
+Docker와 Docker Compose만 있으면 backend·frontend를 한 번에 실행합니다.
+
+```bash
+docker compose up --build
+```
+
+- Frontend: http://localhost:8080
+- Backend API 문서: http://localhost:8000/docs
+- 종료: `docker compose down` (DB까지 초기화하려면 `docker compose down -v`)
+
+SQLite 데이터는 `backend-data` 볼륨에 유지됩니다. LLM NLU를 쓰려면 `docker-compose.yml`의 backend `environment`에서 `LLM_ENABLED: "true"`로 바꾸고 `OPENAI_API_KEY`를 추가하세요.
+
+### 옵션 B. 로컬 실행
+
+#### 사전 요구사항
 
 - Python 3.11+
 - Node.js 18+

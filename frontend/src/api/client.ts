@@ -3,10 +3,33 @@ import axios, { AxiosError, type AxiosInstance } from 'axios';
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000';
 
+const SESSION_STORAGE_KEY = 'automate.sessionId';
+
+/**
+ * A stable per-browser session id so each client gets its own isolated vehicle
+ * state on the backend. Persisted in localStorage; regenerated only if missing.
+ */
+function getSessionId(): string {
+  try {
+    const existing = localStorage.getItem(SESSION_STORAGE_KEY);
+    if (existing) return existing;
+    const generated =
+      typeof crypto !== 'undefined' && 'randomUUID' in crypto
+        ? crypto.randomUUID()
+        : `sess-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    localStorage.setItem(SESSION_STORAGE_KEY, generated);
+    return generated;
+  } catch {
+    // localStorage unavailable (e.g. SSR/tests) — fall back to an ephemeral id
+    return 'default';
+  }
+}
+
 export const apiClient: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
+    'X-Session-Id': getSessionId(),
   },
   timeout: 30000,
 });

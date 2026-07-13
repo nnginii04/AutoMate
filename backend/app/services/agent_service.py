@@ -39,11 +39,11 @@ class AgentService:
         self.capability_service = capability_service or get_capability_service()
         self.log_repo = ExecutionLogRepository(db)
 
-    def run(self, request: AgentRunRequest) -> AgentRunResponse:
+    def run(self, request: AgentRunRequest, session_id: str | None = None) -> AgentRunResponse:
         started = time.perf_counter()
         user_input = request.user_input.strip()
 
-        stored = vehicle_state_store.get()
+        stored = vehicle_state_store.get(session_id)
         vehicle_state = stored.merge(request.vehicle_state)
         snapshot = vehicle_state.to_snapshot()
 
@@ -133,7 +133,9 @@ class AgentService:
         if tool_call:
             tool_result = self.tool_registry.execute(tool_call, vehicle_state)
             if tool_result.updated_vehicle_state:
-                vehicle_state_store.apply_tool_updates(tool_result.updated_vehicle_state)
+                vehicle_state_store.apply_tool_updates(
+                    tool_result.updated_vehicle_state, session_id
+                )
 
         if capability is not None:
             final_response = self.capability_service.render_success(

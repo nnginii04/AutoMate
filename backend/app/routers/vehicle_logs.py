@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException
+from typing import Optional
+
+from fastapi import APIRouter, Depends, Header, HTTPException
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -10,13 +12,18 @@ router = APIRouter(tags=["vehicle", "logs"])
 
 
 @router.get("/vehicle/state", response_model=VehicleState)
-def get_vehicle_state() -> VehicleState:
-    return vehicle_state_store.get()
+def get_vehicle_state(
+    x_session_id: Optional[str] = Header(default=None),
+) -> VehicleState:
+    return vehicle_state_store.get(x_session_id)
 
 
 @router.patch("/vehicle/state", response_model=VehicleState)
-def update_vehicle_state(partial: dict) -> VehicleState:
-    return vehicle_state_store.update(partial)
+def update_vehicle_state(
+    partial: dict,
+    x_session_id: Optional[str] = Header(default=None),
+) -> VehicleState:
+    return vehicle_state_store.update(partial, x_session_id)
 
 
 @router.get("/logs", response_model=list[ExecutionLogResponse])
