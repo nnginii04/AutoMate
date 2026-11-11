@@ -1,0 +1,3 @@
+# Frozen eval data is hashed; keep it byte-stable across platforms
+backend/eval/data/*.jsonl text eol=lf
+backend/eval/data/MANIFEST.json text eol=lf

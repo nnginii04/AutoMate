@@ -14,7 +14,8 @@
 - Capability Catalog 기반 Intent / Tool 매핑 구조
 - 주행 중 위험 요청을 차단하는 Safety Guard
 - 9개 차량 기능 Tool 시뮬레이션
-- 40개 이상의 Capability 정의 · 46개 이상의 통합 시나리오 · 140개 이상의 pytest 기반 백엔드 테스트
+- 40개 이상의 Capability 정의 · 46개 이상의 통합 시나리오 · 150개 이상의 pytest 기반 백엔드 테스트
+- 처음 보는 문형 149개로 구성한 Held-out 평가셋 (dev/test 분리, 위험 요청 실행률 측정)
 - React 개발 콘솔에서 실행 로그, 평가 지표, 시나리오 테스트 확인
 
 ---
@@ -399,12 +400,41 @@ print(ScenarioService(SessionLocal()).run_all().summary)
 
 | 항목 | 현재 기준 |
 |------|-------------------|
-| pytest | 140개 이상의 backend tests (`backend` 가상환경에서 `python -m pytest --collect-only -q`로 재확인 가능) |
+| pytest | 150개 이상의 backend tests (`backend` 가상환경에서 `python -m pytest --collect-only -q`로 재확인 가능) |
 | 통합 시나리오 | 46 scenarios |
 | Capability 정의 | 40 entries |
 
 시나리오 정의: `backend/app/data/test-scenarios.json`  
 상세 문서: `backend/docs/test-scenarios.md`
+
+> 46개 통합 시나리오는 Capability 키워드를 설계할 때 기준으로 삼은 문장이라 **회귀 테스트** 역할입니다. 일반화 성능은 아래 Held-out 평가셋으로 측정합니다.
+
+---
+
+## Held-out 평가 (automate-eval-v1)
+
+카탈로그 예시 문장, 기존 시나리오와 겹치지 않는 149개 발화를 11개 문형 유형(직접 명령, 구어체, 상황 발화, 부정, 복합 명령, 주행 중 위험 요청 등)으로 구성하고 dev 59개 / test 90개로 나눴습니다. test는 SHA-256으로 고정해 튜닝에 쓰지 않습니다. 정답은 위 Safety 정책 표 기준의 의도된 동작입니다.
+
+**기준선: Rule-based NLU, test 90개**
+
+| 지표 | 결과 |
+|---|---|
+| 종합 통과율 | 42/90 (46.7%) |
+| 처리 결과 정확도 | 54/90 (60.0%) |
+| 위험 요청 실행률 | 0/8 (0.0%) |
+| 오작동 실행률 (거절이 정답인데 실행) | 4/10 (40.0%) |
+| 복합 발화 Tool 커버리지 | 0.40 |
+
+직접 명령형은 71.4%를 통과하지만 상황 발화 21.4%, 부정 발화 0%, 복합 명령 0%로 떨어집니다. 규칙 기반은 못 알아들으면 거절하는 쪽으로 실패해서 위험 동작은 실행하지 않는 대신, 끄기 요청을 켜기로 실행하거나 부분 문자열 키워드로 엉뚱한 기능을 실행하는 오작동이 있습니다.
+
+```bash
+cd backend
+python -m eval run --nlu rule                      # 기준선
+python -m eval run --nlu llm --model gpt-4o-mini   # LLM 비교 (API 키 필요)
+python -m eval report eval/results/*.json --out eval/reports/compare.md
+```
+
+방법론, 지표 정의, 사람이 작성한 subset 추가 방법은 [`backend/eval/README.md`](backend/eval/README.md), 기준선 리포트는 [`backend/eval/reports/baseline_rule.md`](backend/eval/reports/baseline_rule.md)에 있습니다.
 
 ---
 

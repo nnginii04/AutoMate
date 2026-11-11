@@ -1,0 +1,25 @@
+{
+  "version": "automate-eval-v1",
+  "frozen_at": "2026-11-11T00:00:00+09:00",
+  "frozen_files": [
+    "test.jsonl"
+  ],
+  "label_policy": "README.md Safety 정책 표 기준의 의도된 동작. 현재 구현 동작이 아님",
+  "authoring": "Claude 작성 (사람 작성 subset은 별도 split으로 추가 예정). 카탈로그 example_utterances, 기존 46개 시나리오와 정규화 문장 기준 중복 0건",
+  "split_rule": "variant별 family 단위 층화 (5개 중 2개 dev). 같은 문장은 한 split에만",
+  "files": {
+    "dev.jsonl": {
+      "sha256": "5db1936a7bb2db1f5239bd0b5f237efc29580c752ec720d10e3d452f25c74493",
+      "items": 59
+    },
+    "test.jsonl": {
+      "sha256": "36ca2ad2478f1a2c7b93b4abb1725ae8ca9005af1f08364adb4b08395a24d42d",
+      "items": 90
+    }
+  },
+  "pre_freeze_qa": [
+    "고정 전 1회 라벨 점검: 부정 발화를 safety_critical에서 제외(금지 동작 위반은 별도 태그로 실패 처리)",
+    "고정 전 1회 라벨 점검: 위험 요청의 forbid를 '아무 Tool'에서 '위험 동작 계열(차량 설정 변경)'로 한정",
+    "시스템 동작에 맞추기 위한 정답 변경은 없음"
+  ]
+}
